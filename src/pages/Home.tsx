@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
-import { KataCard } from '@/components/KataCard';
+import { LazyKataCard } from '@/components/LazyKataCard';
 import { VideoModal } from '@/components/VideoModal';
 import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
 import { fetchKatas } from '@/utils/api';
@@ -28,6 +28,8 @@ export const Home = () => {
   useEffect(() => {
     const loadKatas = async () => {
       try {
+        // Delay inicial para mejorar perceived performance
+        await new Promise(resolve => setTimeout(resolve, 100));
         const data = await fetchKatas();
         setKatas(data);
       } catch (err) {
@@ -115,7 +117,7 @@ export const Home = () => {
               
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {filteredKatas.map((kata) => (
-                  <KataCard
+                  <LazyKataCard
                     key={kata.id}
                     kata={kata}
                     onClick={() => handleKataClick(kata)}

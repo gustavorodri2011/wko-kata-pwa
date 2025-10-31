@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Play } from 'lucide-react';
 import { getVideoUrl } from '@/utils/api';
 import { getThumbnailFromDrive, generateThumbnail, getThumbnailFromCache, saveThumbnailToCache } from '@/utils/videoThumbnail';
+import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 
 interface VideoThumbnailProps {
   driveId: string;
@@ -13,8 +14,14 @@ export const VideoThumbnail = ({ driveId, kataName, className = '' }: VideoThumb
   const [thumbnail, setThumbnail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { elementRef, hasIntersected } = useIntersectionObserver({
+    threshold: 0.1,
+    rootMargin: '200px'
+  });
 
   useEffect(() => {
+    if (!hasIntersected) return;
+    
     const loadThumbnail = async () => {
       try {
         // Verificar cache primero
@@ -48,11 +55,11 @@ export const VideoThumbnail = ({ driveId, kataName, className = '' }: VideoThumb
     };
 
     loadThumbnail();
-  }, [driveId]);
+  }, [driveId, hasIntersected]);
 
-  if (loading) {
+  if (!hasIntersected || loading) {
     return (
-      <div className={`bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center ${className}`}>
+      <div ref={elementRef} className={`bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center ${className}`}>
         <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full"></div>
       </div>
     );
@@ -70,7 +77,7 @@ export const VideoThumbnail = ({ driveId, kataName, className = '' }: VideoThumb
   }
 
   return (
-    <div className={`relative overflow-hidden ${className}`}>
+    <div ref={elementRef} className={`relative overflow-hidden ${className}`}>
       <img 
         src={thumbnail} 
         alt={`Thumbnail de ${kataName}`}
