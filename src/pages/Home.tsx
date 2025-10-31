@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { KataCard } from '@/components/KataCard';
 import { VideoModal } from '@/components/VideoModal';
+import { KeyboardShortcuts } from '@/components/KeyboardShortcuts';
 import { fetchKatas } from '@/utils/api';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import type { Kata } from '@/types';
@@ -134,6 +135,8 @@ export const Home = () => {
           onPrevious={filteredKatas.length > 1 ? handlePreviousKata : undefined}
         />
       )}
+      
+      <KeyboardShortcuts />
     </div>
   );
 };

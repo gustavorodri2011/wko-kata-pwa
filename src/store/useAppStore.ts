@@ -17,6 +17,10 @@ interface AppStore extends AppState {
   updateVideoProgress: (kataId: string, currentTime: number, duration: number) => void;
   getVideoProgress: (kataId: string) => VideoProgress | null;
   markVideoCompleted: (kataId: string) => void;
+  toggleTheaterMode: () => void;
+  toggleAutoPlayNext: () => void;
+  isTheaterMode: boolean;
+  autoPlayNext: boolean;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -31,6 +35,8 @@ export const useAppStore = create<AppStore>()(
       currentKata: null,
       isSidebarOpen: false,
       videoProgress: {},
+      isTheaterMode: false,
+      autoPlayNext: false,
 
       setKatas: (katas) => set({ katas }),
       
@@ -96,6 +102,10 @@ export const useAppStore = create<AppStore>()(
         }
         return state;
       }),
+
+      toggleTheaterMode: () => set((state) => ({ isTheaterMode: !state.isTheaterMode })),
+      
+      toggleAutoPlayNext: () => set((state) => ({ autoPlayNext: !state.autoPlayNext })),
 
       getFilteredKatas: () => {
         const { katas, searchTerm, selectedBelts, showFavoritesOnly, favorites } = get();

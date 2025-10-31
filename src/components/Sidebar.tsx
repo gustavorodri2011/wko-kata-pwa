@@ -1,4 +1,4 @@
-import { Heart, X, Play } from 'lucide-react';
+import { Heart, X, Play, SkipForward } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { BELT_COLORS, BELT_ORDER } from '@/utils/constants';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
@@ -13,7 +13,9 @@ export const Sidebar = () => {
     favorites,
     isSidebarOpen,
     closeSidebar,
-    videoProgress
+    videoProgress,
+    autoPlayNext,
+    toggleAutoPlayNext
   } = useAppStore();
   
   const inProgressVideos = Object.values(videoProgress).filter(
@@ -91,6 +93,18 @@ export const Sidebar = () => {
               </p>
             </div>
           )}
+          
+          <button
+            onClick={toggleAutoPlayNext}
+            className={`w-full flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+              autoPlayNext
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            <SkipForward className={`h-4 w-4 ${autoPlayNext ? 'fill-current' : ''}`} />
+            <span>Reproducción automática</span>
+          </button>
         </div>
 
         <div>
