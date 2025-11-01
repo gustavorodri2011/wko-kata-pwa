@@ -36,17 +36,7 @@ export interface VideoProgress {
   completed: boolean;
 }
 
-export interface User {
-  id: number;
-  username: string;
-  name: string;
-  belt: BeltLevel;
-}
 
-export interface AuthState {
-  currentUser: User | null;
-  isAuthenticated: boolean;
-}
 
 export interface AppState {
   katas: Kata[];
