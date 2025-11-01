@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AppState, Kata, BeltLevel, VideoProgress } from '@/types';
+import type { AppState, Kata, BeltLevel, VideoProgress, User, AuthState } from '@/types';
+import { canAccessKata } from '../utils/beltHierarchy';
+import { AuthService } from '../utils/auth';
 
 interface AppStore extends AppState {
   setKatas: (katas: Kata[]) => void;
@@ -21,6 +23,11 @@ interface AppStore extends AppState {
   toggleAutoPlayNext: () => void;
   isTheaterMode: boolean;
   autoPlayNext: boolean;
+  
+  // Authentication
+  auth: AuthState;
+  setAuth: (authState: AuthState) => void;
+  logout: () => void;
 }
 
 export const useAppStore = create<AppStore>()(
@@ -37,6 +44,12 @@ export const useAppStore = create<AppStore>()(
       videoProgress: {},
       isTheaterMode: false,
       autoPlayNext: false,
+      
+      // Authentication state
+      auth: {
+        currentUser: null,
+        isAuthenticated: false
+      },
 
       setKatas: (katas) => set({ katas }),
       
@@ -108,9 +121,16 @@ export const useAppStore = create<AppStore>()(
       toggleAutoPlayNext: () => set((state) => ({ autoPlayNext: !state.autoPlayNext })),
 
       getFilteredKatas: () => {
-        const { katas, searchTerm, selectedBelts, showFavoritesOnly, favorites } = get();
+        const { katas, searchTerm, selectedBelts, showFavoritesOnly, favorites, auth } = get();
         
         return katas.filter(kata => {
+          // Check belt permissions
+          if (auth.isAuthenticated && auth.currentUser) {
+            if (!canAccessKata(auth.currentUser.belt, kata.beltLevel)) {
+              return false;
+            }
+          }
+          
           const matchesSearch = kata.kataName.toLowerCase().includes(searchTerm.toLowerCase());
           const matchesBelt = selectedBelts.length === 0 || selectedBelts.includes(kata.beltLevel);
           const matchesFavorites = !showFavoritesOnly || favorites.includes(kata.id);
@@ -121,6 +141,19 @@ export const useAppStore = create<AppStore>()(
             return a.beltLevel.localeCompare(b.beltLevel);
           }
           return a.order - b.order;
+        });
+      },
+      
+      // Authentication methods
+      setAuth: (authState) => set({ auth: authState }),
+      
+      logout: () => {
+        AuthService.logout();
+        set({
+          auth: {
+            currentUser: null,
+            isAuthenticated: false
+          }
         });
       }
     }),

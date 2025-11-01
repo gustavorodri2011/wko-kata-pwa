@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useAppStore } from '@/store/useAppStore';
 import { Home } from '@/pages/Home';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
   const { isDarkMode } = useAppStore();
+  useAuth(); // Verify authentication on app load
 
   useEffect(() => {
     if (isDarkMode) {

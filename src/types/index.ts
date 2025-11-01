@@ -36,6 +36,18 @@ export interface VideoProgress {
   completed: boolean;
 }
 
+export interface User {
+  id: number;
+  username: string;
+  name: string;
+  belt: BeltLevel;
+}
+
+export interface AuthState {
+  currentUser: User | null;
+  isAuthenticated: boolean;
+}
+
 export interface AppState {
   katas: Kata[];
   favorites: string[];
@@ -45,6 +57,8 @@ export interface AppState {
   isDarkMode: boolean;
   currentKata: Kata | null;
   videoProgress: Record<string, VideoProgress>;
+  auth: AuthState;
+  users: User[];
 }
 
 export interface FilterState {

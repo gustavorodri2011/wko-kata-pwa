@@ -1,6 +1,9 @@
-import { Search, Moon, Sun, Menu, X } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Moon, Sun, Menu, X, User, LogOut, Shield, Settings } from 'lucide-react';
 import { useAppStore } from '@/store/useAppStore';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { LoginForm } from './LoginForm';
+import { KeyboardShortcuts } from './KeyboardShortcuts';
 
 export const Header = () => {
   const { 
@@ -9,10 +12,15 @@ export const Header = () => {
     isDarkMode, 
     toggleDarkMode,
     isSidebarOpen,
-    toggleSidebar 
+    toggleSidebar,
+    auth,
+    logout
   } = useAppStore();
   
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const [showLogin, setShowLogin] = useState(false);
+
+  const [showShortcuts, setShowShortcuts] = useState(false);
 
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
@@ -54,18 +62,66 @@ export const Header = () => {
             </div>
           </div>
 
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-          >
-            {isDarkMode ? (
-              <Sun className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+          <div className="flex items-center gap-2">
+            {auth.isAuthenticated ? (
+              <>
+                <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+                  <User size={16} />
+                  <span>{auth.currentUser?.name}</span>
+                  <span className="text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 px-2 py-1 rounded">
+                    {auth.currentUser?.belt}
+                  </span>
+                </div>
+                
+
+                <button
+                  onClick={logout}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  title="Cerrar sesión"
+                >
+                  <LogOut size={20} className="text-gray-600 dark:text-gray-400" />
+                </button>
+              </>
             ) : (
-              <Moon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <button
+                onClick={() => setShowLogin(true)}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                Iniciar Sesión
+              </button>
             )}
-          </button>
+            
+            <button
+              onClick={() => setShowShortcuts(true)}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              title="Atajos de teclado"
+            >
+              <Settings size={20} className="text-gray-600 dark:text-gray-400" />
+            </button>
+            
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            >
+              {isDarkMode ? (
+                <Sun className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              ) : (
+                <Moon className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
+      
+      <LoginForm 
+        isOpen={showLogin} 
+        onClose={() => setShowLogin(false)} 
+      />
+      
+      <KeyboardShortcuts 
+        isOpen={showShortcuts} 
+        onClose={() => setShowShortcuts(false)} 
+      />
     </header>
   );
 };

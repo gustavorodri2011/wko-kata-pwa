@@ -1,8 +1,11 @@
-import { useState } from 'react';
-import { Keyboard, X } from 'lucide-react';
+import { X } from 'lucide-react';
 
-export const KeyboardShortcuts = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface KeyboardShortcutsProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const KeyboardShortcuts = ({ isOpen, onClose }: KeyboardShortcutsProps) => {
 
   const shortcuts = [
     { key: 'Espacio', action: 'Reproducir/Pausar' },
@@ -12,17 +15,9 @@ export const KeyboardShortcuts = () => {
     { key: 'Esc', action: 'Cerrar/Salir modo teatro' }
   ];
 
-  return (
-    <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-4 right-4 p-3 bg-gray-800 dark:bg-gray-700 text-white rounded-full shadow-lg hover:bg-gray-700 dark:hover:bg-gray-600 transition-colors z-40"
-        title="Atajos de teclado"
-      >
-        <Keyboard className="h-5 w-5" />
-      </button>
+  if (!isOpen) return null;
 
-      {isOpen && (
+  return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-gray-900 rounded-lg max-w-md w-full p-6">
             <div className="flex items-center justify-between mb-4">
@@ -30,7 +25,7 @@ export const KeyboardShortcuts = () => {
                 Atajos de Teclado
               </h3>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={onClose}
                 className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 <X className="h-5 w-5 text-gray-600 dark:text-gray-400" />
@@ -51,7 +46,5 @@ export const KeyboardShortcuts = () => {
             </div>
           </div>
         </div>
-      )}
-    </>
   );
 };
